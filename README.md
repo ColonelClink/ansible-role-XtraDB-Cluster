@@ -3,10 +3,10 @@
 
 An Ansible role for setting up a Percona XtraDB Cluster. Specifically, the responsibilities of this role are to:
 
-- install packages
-- secure connections
-- bootstrap the cluster
-- import data if desired
+- Install packages
+- Secure connections
+- Bootstrap the cluster
+- Import data if desired
 
 ## Requirements
 
@@ -23,14 +23,14 @@ No specific requirements
 | `xtradb_configured` | `xtradb_datadir`/configured | A cookie for idempotency |
 | `xtradb_datadir` | `/var/lib/mysql` | Directory of data |
 | `xtradb_master_node` | `groups[xtradb_nodes_group][0]` | The chosen node to be master |
-| `xtradb_mysql_user` | `mysql` | The user for run galera |
+| `xtradb_mysql_user` | `mysql` | The user for running galera |
 | `xtradb_nodes_group` | `xtradb-cluster-nodes` | Node group where the cluster will be installed |
 | `xtradb_root_password` | `root` | Password for the root user |
 | `xtradb_root_user` | `root` | The root user |
-| `xtradb_secured` | `xtradb_datadir`/secured |A cookie for idempotency |
+| `xtradb_secured` | `xtradb_datadir`/secured | A cookie for idempotency |
 | `xtradb_service` | `mysql` | Linux service name  |
 | `xtradb_sst_password` | `sstpassword` | Password for the `xtradb_sst_user` |
-| `xtradb_sst_user` | `sstuser` | User used to the state snapshot transfer  |
+| `xtradb_sst_user` | `sstuser` | User for state snapshot transfer  |
 | `xtradb_swappiness` | `0` | "Swappiness" value. System default is 60. A value of 0 means that swapping out processes is avoided.  |
 | `xtradb_databases`     | []          | List of names of the databases to be added                                                                  |
 | `xtradb_users`         | []          | List of dicts specifying the users to be added. See below for details.                                      |
@@ -42,20 +42,20 @@ For more info on the values, read the [MariaDB Server System Variables documenta
 
 | Variable   | Default | Comments (type)  |
 | :---       | :---    | :---             |
-| `xtradb_binlog_format` | `ROW` | The binary logging format  |
-| `xtradb_character_set_server` | `utf` | The character set |
-| `xtradb_collation_server` | `utf8_general_ci` | The collation |
-| `xtradb_default_storage_engine` | `InnoDB` | Setting the Storage Engine |
-| `xtradb_innodb_autoinc_lock_mode` | `2` | There are three possible settings for the innodb_autoinc_lock_mode configuration parameter. The settings are 0, 1, or 2, for “traditional”, “consecutive”, or “interleaved” lock mode, respectively |
-| `xtradb_innodb_buffer_pool_instances` | ` ` | To enable multiple buffer pool instances, set the innodb_buffer_pool_instances configuration option to a value greater than 1 (8 is the default) up to 64 (the maximum). This option takes effect only when you set innodb_buffer_pool_size to a size of 1GB or more. The total size you specify is divided among all the buffer pools |
-| `xtradb_innodb_buffer_pool_size` | ` ` | A good value is 70%-80% of available memory. |
+| `xtradb_binlog_format` | `ROW` | The binary logging format.  |
+| `xtradb_character_set_server` | `utf` | The character set. |
+| `xtradb_collation_server` | `utf8_general_ci` | The collation. |
+| `xtradb_default_storage_engine` | `InnoDB` | Setting the Storage Engine. |
+| `xtradb_innodb_autoinc_lock_mode` | `2` | There are three possible settings for the innodb_autoinc_lock_mode configuration parameter. The settings are 0, 1, or 2, for “traditional”, “consecutive”, or “interleaved” lock mode, respectively. |
+| `xtradb_innodb_buffer_pool_instances` | ` ` | To enable multiple buffer pool instances, set the innodb_buffer_pool_instances configuration option to a value greater than 1 (8 is the default) up to 64 (the maximum). This option takes effect only when you set innodb_buffer_pool_size to a size of 1GB or more. The total size you specify is divided among all the buffer pools. |
+| `xtradb_innodb_buffer_pool_size` | 75% of available memory | A good value is 70%-80% of available memory. |
 | `xtradb_innodb_file_format` | ` ` |  |
 | `xtradb_innodb_file_format_check` | ` ` |  |
 | `xtradb_innodb_file_per_table` | ` ` |  |
-| `xtradb_innodb_flush_log_at_trx_commit` | ` ` | When innodb_flush_log_at_trx_commit is set to 1 the log buffer is flushed on every transaction commit to the log file on disk and provides maximum data integrity but it also has performance impact. Setting it to 2 means log buffer is flushed to OS file cache on every transaction commit. The implication of 2 is optimal and improve performance if you are not concerning ACID and can lose transactions for last second or two in case of OS crashes.  |
-| `xtradb_innodb_log_buffer_size` | ` ` | Innodb writes changed data record into lt’s log buffer, which kept in memory and it saves disk I/O for large transactions as it not need to write the log of changes to disk before transaction commit. 4 MB – 8 MB is good start unless you write a lot of huge blobs |
-| `xtradb_innodb_log_file_size` | ` ` |  Default value has been changed in MySQL 5.6 to 50 MB from 5 MB (old default), but it’s still too small size for many workloads |
-| `xtradb_innodb_file_per_table` | `on` | innodb_file_per_table is ON by default from MySQL 5.6. This is usually recommended as it avoids having a huge shared tablespace and as it allows you to reclaim space when you drop or truncate a table. Separate tablespace also benefits for Xtrabackup partial backup scheme |
+| `xtradb_innodb_flush_log_at_trx_commit` | ` ` | When innodb_flush_log_at_trx_commit is set to 1 the log buffer is flushed on every transaction commit to the log file on disk and provides maximum data integrity but it also has a performance impact. Setting it to 2 means log buffer is flushed to OS file cache on every transaction commit. A value of 2 is optimal and improves performance if you are not using ACID, but will lose the last second or two of transactions in the event of an OS crash. |
+| `xtradb_innodb_log_buffer_size` | ` ` | Innodb writes the changed data record into it’s log buffer, which is kept in memory and saves disk I/O for large transactions as it not need to write the log of changes to disk before transaction commit. 4 MB – 8 MB is good start unless you write a lot of huge blobs. |
+| `xtradb_innodb_log_file_size` | 50 |  Default value has been changed in MySQL 5.6 to 50 MB from 5 MB (old default), but it’s still too small size for many workloads. |
+| `xtradb_innodb_file_per_table` | `on` | innodb_file_per_table is ON by default from MySQL 5.6. This is usually recommended as it avoids having a huge shared tablespace and as it allows you to reclaim space when you drop or truncate a table. Separate tablespace also benefits for Xtrabackup partial backup scheme. |
 | `xtradb_innodb_strict_mode` | `on` |  |
 | `xtradb_join_buffer_size` | ` ` |  |
 | `xtradb_log_warnings` | ` ` |  |
@@ -65,7 +65,7 @@ For more info on the values, read the [MariaDB Server System Variables documenta
 | `xtradb_max_connections` | `4096` |  |
 | `xtradb_max_heap_table_size` | ` ` |  |
 | `xtradb_max_user_connections` | ` ` |  |
-| `xtradb_pxc_strict_mode` | `ENFORCING` | PXC Strict Mode is designed to avoid the use of experimental and unsupported features in Percona XtraDB Cluster |
+| `xtradb_pxc_strict_mode` | `ENFORCING` | PXC Strict Mode is designed to avoid the use of experimental and unsupported features in Percona XtraDB Cluster. |
 | `xtradb_query_cache_size` | ` ` |  |
 | `xtradb_read_buffer_size` | ` ` |  |
 | `xtradb_read_rnd_buffer_size` | ` ` |  |
@@ -230,3 +230,4 @@ Pull requests are also very welcome. The best way to submit a PR is by first cre
 ## Contributors
 
 - [Cedric DELGEHIER](https://github.com/cdelgehier/) (maintainer)
+- [ColonelClink](https://github.com/ColonelClink/)
